@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "540925001388",
+    "project_id": "mynotes-app-flutter-vp-ae80d",
+    "storage_bucket": "mynotes-app-flutter-vp-ae80d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540925001388:android:5eb04337d29e4106eee909",
+        "android_client_info": {
+          "package_name": "com.fluttertest.mynotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "540925001388-bn42c4mgv4herf3nukfrhgn81enai3j5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQo6-BaZPVJmLOkFeaungen0Fy3co0h10"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "540925001388-bn42c4mgv4herf3nukfrhgn81enai3j5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "540925001388-ea03ovf95tptr66ialmrovcisvb1vu9b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.learning.mynotes"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540925001388:android:775dbfa9fdf52752eee909",
+        "android_client_info": {
+          "package_name": "com.learning.mynotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "540925001388-bn42c4mgv4herf3nukfrhgn81enai3j5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQo6-BaZPVJmLOkFeaungen0Fy3co0h10"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "540925001388-bn42c4mgv4herf3nukfrhgn81enai3j5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "540925001388-ea03ovf95tptr66ialmrovcisvb1vu9b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.learning.mynotes"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
