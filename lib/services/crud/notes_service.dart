@@ -14,18 +14,23 @@ class NotesService {
 
   static final NotesService _shared = NotesService._sharedInstance();
 
-  NotesService._sharedInstance();
+  NotesService._sharedInstance() {
+    _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
+      onListen: () {
+        _notesStreamController.sink.add(_notes);
+      },
+    );
+  }
 
   factory NotesService() => _shared;
 
-  final _notesStreamController =
-      StreamController<List<DatabaseNote>>.broadcast();
+  late final StreamController<List<DatabaseNote>> _notesStreamController;
 
   Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
 
   Future<DatabaseUser> getOrCreateUser({required String email}) async {
     try {
-      final user = await getUesr(email: email);
+      final user = await getUser(email: email);
       return user;
     } on CouldNotFindUser {
       final createdUser = await createUser(email: email);
@@ -71,6 +76,7 @@ class NotesService {
     final notes = await db.query(
       noteTable,
     );
+    print(notes);
 
     final results = notes.map((notesRow) => DatabaseNote.fromRow(notesRow));
     if (notes.isEmpty) {
@@ -129,7 +135,7 @@ class NotesService {
   Future<DatabaseNote> createNote({required DatabaseUser owner}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-    final dbUser = await getUesr(email: owner.email);
+    final dbUser = await getUser(email: owner.email);
     if (dbUser != owner) {
       throw CouldNotFindUser();
     }
@@ -150,7 +156,7 @@ class NotesService {
     return note;
   }
 
-  Future<DatabaseUser> getUesr({required String email}) async {
+  Future<DatabaseUser> getUser({required String email}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final results = await db.query(
@@ -204,6 +210,7 @@ class NotesService {
   Database _getDatabaseOrThrow() {
     final db = _db;
     if (db == null) {
+      print("database not open");
       throw DatabseIsNotOpen();
     } else {
       return db;
@@ -259,8 +266,8 @@ class DatabaseUser {
   });
 
   DatabaseUser.fromRow(Map<String, Object?> map)
-      : id = map["idCol"] as int,
-        email = map["emailCol"] as String;
+      : id = map[idCol] as int,
+        email = map[emailCol] as String;
   @override
   String toString() => 'Person, ID = $id, email = $email';
 
@@ -283,9 +290,9 @@ class DatabaseNote {
   });
 
   DatabaseNote.fromRow(Map<String, Object?> map)
-      : id = map["idCol"] as int,
-        userId = map["userIdCol"] as int,
-        text = map["textCol"] as String;
+      : id = map[idCol] as int,
+        userId = map[userIdCol] as int,
+        text = map[textCol] as String;
 
   @override
   toString() => 'Note, ID = $id, userId = $userId, text = $text';

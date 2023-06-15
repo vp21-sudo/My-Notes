@@ -10,32 +10,37 @@ class NewNotes extends StatefulWidget {
 }
 
 class _NewNotesState extends State<NewNotes> {
-  DatabaseNote? _notes;
+  DatabaseNote? _note;
   late final NotesService _notesService;
   late final TextEditingController _textController;
 
-  Future<DatabaseNote> CreateNewNote() async {
-    final existingNote = _notes;
+  @override
+  void initState() {
+    _notesService = NotesService();
+    _textController = TextEditingController();
+    super.initState();
+  }
+
+  Future<DatabaseNote> createNewNote() async {
+    final existingNote = _note;
     if (existingNote != null) {
       return existingNote;
     }
     final currentUser = AuthService.firebase().currentUser!;
     final email = currentUser.email!;
-    final owner = await _notesService.getUesr(
-      email: email,
-    );
+    final owner = await _notesService.getUser(email: email);
     return await _notesService.createNote(owner: owner);
   }
 
   void _deleteNoteIfTextEmpty() {
-    final note = _notes;
+    final note = _note;
     if (_textController.text.isEmpty && note != null) {
       _notesService.deleteNote(id: note.id);
     }
   }
 
   void _saveNoteIfTextNotEmpty() async {
-    final note = _notes;
+    final note = _note;
     final text = _textController.text;
     if (note != null && text.isNotEmpty) {
       await _notesService.updateNote(
@@ -45,24 +50,10 @@ class _NewNotesState extends State<NewNotes> {
     }
   }
 
-  @override
-  void initState() {
-    _notesService = NotesService();
-    _textController = TextEditingController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _deleteNoteIfTextEmpty();
-    _saveNoteIfTextNotEmpty();
-    _textController.dispose();
-    super.dispose();
-  }
-
   void _textControllerListener() async {
-    final note = _notes;
+    final note = _note;
     if (note == null) {
+      print("Notes is null");
       return;
     }
     final text = _textController.text;
@@ -75,17 +66,25 @@ class _NewNotesState extends State<NewNotes> {
   }
 
   @override
+  void dispose() {
+    _deleteNoteIfTextEmpty();
+    _saveNoteIfTextNotEmpty();
+    _textController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("New Note"),
       ),
       body: FutureBuilder(
-          future: CreateNewNote(),
+          future: createNewNote(),
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.done:
-                _notes = snapshot.data;
+                _note = snapshot.data;
                 _setupTextControllerListener();
                 return TextField(
                   controller: _textController,
