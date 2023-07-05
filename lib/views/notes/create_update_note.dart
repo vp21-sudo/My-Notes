@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/crud/notes_service.dart';
+import 'package:mynotes/utils/generics/get_args.dart';
 
-class NewNotes extends StatefulWidget {
-  const NewNotes({super.key});
+class CreateUpdateNotes extends StatefulWidget {
+  const CreateUpdateNotes({super.key});
 
   @override
-  State<NewNotes> createState() => _NewNotesState();
+  State<CreateUpdateNotes> createState() => _CreateUpdateNotesState();
 }
 
-class _NewNotesState extends State<NewNotes> {
+class _CreateUpdateNotesState extends State<CreateUpdateNotes> {
   DatabaseNote? _note;
   late final NotesService _notesService;
   late final TextEditingController _textController;
@@ -21,7 +22,15 @@ class _NewNotesState extends State<NewNotes> {
     super.initState();
   }
 
-  Future<DatabaseNote> createNewNote() async {
+  Future<DatabaseNote> createOrGetExistingNote(BuildContext context) async {
+    print("plusss");
+    final widgetNote = context.getArgument<DatabaseNote>();
+    if (widgetNote != null) {
+      _note = widgetNote;
+      _textController.text = widgetNote.text;
+      return widgetNote;
+    }
+
     final existingNote = _note;
     if (existingNote != null) {
       return existingNote;
@@ -29,7 +38,9 @@ class _NewNotesState extends State<NewNotes> {
     final currentUser = AuthService.firebase().currentUser!;
     final email = currentUser.email!;
     final owner = await _notesService.getUser(email: email);
-    return await _notesService.createNote(owner: owner);
+    final newNote = await _notesService.createNote(owner: owner);
+    _note = newNote;
+    return newNote;
   }
 
   void _deleteNoteIfTextEmpty() {
@@ -53,7 +64,7 @@ class _NewNotesState extends State<NewNotes> {
   void _textControllerListener() async {
     final note = _note;
     if (note == null) {
-      print("Notes is null");
+      print("Notes is null....");
       return;
     }
     final text = _textController.text;
@@ -80,11 +91,10 @@ class _NewNotesState extends State<NewNotes> {
         title: const Text("New Note"),
       ),
       body: FutureBuilder(
-          future: createNewNote(),
+          future: createOrGetExistingNote(context),
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.done:
-                _note = snapshot.data;
                 _setupTextControllerListener();
                 return TextField(
                   controller: _textController,
